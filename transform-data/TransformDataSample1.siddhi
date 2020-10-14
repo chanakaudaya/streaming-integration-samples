@@ -1,0 +1,14 @@
+@App:name("TransformDataSample1")
+
+@App:description("Sample siddhi application that transforms event data")
+
+@source(type='http', receiver.url='http://localhost:5005/TempEP', @map(type='json'))
+define stream TempStream (deviceID long, roomNo int, temp double);
+
+@sink(type='log', prefix='Room temperature:')
+define stream  OutputStream(roomNo int, deviceID long, avgTemp double);
+
+from TempStream
+select roomNo, deviceID, avg(temp) as avgTemp
+group by roomNo
+insert into OutputStream;
