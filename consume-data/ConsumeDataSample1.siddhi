@@ -1,0 +1,14 @@
+@App:name("ConsumeDataSample1")
+
+@App:description("Sample on consuming events via HTTP source")
+
+@source(type='http', receiver.url='http://localhost:5005/SalesTotalsEP', @map(type='json'))
+define stream ConsumerSalesTotalsStream(transNo int, product string, price int, quantity int, salesValue long);
+
+@sink(type='log', prefix='Sales Totals:')
+define stream PublishSalesTotalsStream (transNo int, product string, price int, quantity int, salesValue long);
+
+from ConsumerSalesTotalsStream
+select *
+group by product
+insert into PublishSalesTotalsStream;
