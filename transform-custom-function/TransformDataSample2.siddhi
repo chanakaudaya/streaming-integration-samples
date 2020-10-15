@@ -1,0 +1,21 @@
+@App:name("TransformDataSample2")
+
+@App:description("Transform event data with custom function")
+
+@source(type='http', receiver.url='http://localhost:5005/TempEP', @map(type='json'))
+define stream TempStream (deviceID long, roomNo int, temp double);
+
+@sink(type='log', prefix='Current temperature:')
+define stream  DeviceTempStream(id string, temp double);
+
+define function concatFn[javascript] return string {
+    var str1 = data[0];
+    var str2 = data[1];
+    var str3 = data[2];
+    var responce = str1 + str2 + str3;
+    return responce;
+};
+
+from TempStream
+select concatFn(roomNo,'-',deviceID) as id, temp 
+insert into DeviceTempStream;
