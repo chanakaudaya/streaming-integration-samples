@@ -1,0 +1,19 @@
+@App:name("EnrichingTransactionsApp")
+@App:description("Enrich data from table to an event stream")
+
+@source(type='http', receiver.url='http://localhost:5005/TransactionEP', @map(type='json'))
+define stream TrasanctionStream (userId long, transactionAmount double, location string);
+
+@sink(type='log', prefix='Transaction Details:')
+define stream  EnrichedTrasanctionStream(userId long, userName string, transactionAmount double, location string);
+
+@Store(type="rdbms",
+       jdbc.url="jdbc:mysql://localhost:3306/UserDataDB?useSSL=false",
+       username="root",
+       password="root123" ,
+       jdbc.driver.name="com.mysql.jdbc.Driver")
+define table UserTable (userId long, firstName string, lastName string);
+
+from TrasanctionStream as t join UserTable as u on t.userId == u.userId 
+select t.userId, str:concat( u.firstName, " ", u.lastName) as userName, transactionAmount, location
+insert into EnrichedTrasanctionStream;

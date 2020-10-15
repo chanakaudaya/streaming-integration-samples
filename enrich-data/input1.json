@@ -1,0 +1,7 @@
+{
+    "event": {
+        "userId": 1,
+        "transactionAmount": 12.5,
+        "location": "LK"
+      }
+}
