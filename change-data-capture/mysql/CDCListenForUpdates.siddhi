@@ -1,0 +1,14 @@
+@App:name('CDCListenForUpdates')
+@App:description('Capture MySQL Updates using CDC listening mode.')
+
+@source(type = 'cdc', url = 'jdbc:mysql://localhost:3306/production', username = 'wso2si', password = 'wso2', table.name = 'SweetProductionTable', operation = 'update',
+    @map(type = 'keyvalue'))
+define stream UpdateSweetProductionStream (before_name string, name string, before_amount double, amount double);
+
+@sink(type = 'log')
+define stream LogStream (before_name string, name string, before_amount double, amount double);
+
+@info(name = 'query')
+from UpdateSweetProductionStream
+select *
+insert into LogStream;

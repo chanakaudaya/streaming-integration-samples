@@ -1,0 +1,15 @@
+@App:name('CDCListenForInserts')
+
+@App:description('Capture MySQL Inserts using CDC listening mode.')
+
+@source(type = 'cdc', url = 'jdbc:mysql://localhost:3306/UserDataDB?useSSL=false', username = 'root', password = 'root123', table.name = 'UserTable', operation = 'insert',
+    @map(type = 'keyvalue'))
+define stream InsertSweetProductionStream (userId string, firstname string, lastname string);
+
+@sink(type = 'log')
+define stream LogStream (userId string, firstname string, lastname string);
+
+@info(name = 'query')
+from InsertSweetProductionStream
+select *
+insert into LogStream;
