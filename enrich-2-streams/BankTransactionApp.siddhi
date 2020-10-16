@@ -1,0 +1,18 @@
+@App:name("BankTransactionApp")
+@App:description("This sample siddhi app merge data from 2 event streams and enrich data from one stream to the other")
+
+@source(type='http', receiver.url='http://localhost:5005/WithdrawalEP', @map(type='json'))
+define stream CashWithdrawalStream(branchID string, amount long);
+
+@source(type='http', receiver.url='http://localhost:5015/DepositEP', @map(type='json'))
+define stream CashDepositStream(branchID string, amount long);
+
+@sink(type='log', prefix='Cash withdrawals that go beyond sustainability threshold:')
+define stream CashFlowStream(branchID string, withdrawalAmount long, depositAmount long);
+
+from CashWithdrawalStream as w
+    join CashDepositStream as d
+    on w.branchID == d.branchID
+select w.branchID as branchID, w.amount as withdrawalAmount, d.amount as depositAmount
+having w.amount > d.amount * 0.95
+insert into CashFlowStream;
