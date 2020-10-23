@@ -1,0 +1,16 @@
+@App:name('TailLine')
+
+@App:description('Tails a file line by line and does a simple transformation.')
+
+@source(type='file', mode='LINE',
+    file.uri='file:/Users/chanaka/my-experiments/wso2-si-samples/productions.csv',
+    tailing='true',
+    @map(type='csv'))
+define stream SweetProductionStream (name string, amount double);
+
+@sink(type = 'log')
+define stream LogStream (name string, amount double);
+
+from SweetProductionStream
+select str:upper(name) as name, amount
+insert into LogStream;

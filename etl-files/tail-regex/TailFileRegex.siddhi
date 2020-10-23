@@ -1,0 +1,18 @@
+@App:name('TailFileRegex')
+
+
+@App:description('Tails a file using a regex and does a simple transformation.')
+
+@source(type='file', mode='REGEX',
+    file.uri='file:/Users/chanaka/my-experiments/wso2-si-samples/noisy_data.txt',
+    begin.regex='\<', end.regex='\>',
+    tailing='true',
+    @map(type='text', fail.on.missing.attribute = 'false', regex.A='(\w+)\s([-0-9]+)',regex.B='volume\s([-0-9]+)', @attributes(symbol = 'A[1]',price = 'A[2]',volume = 'B')))
+define stream StockStream (symbol string, price float, volume long);
+
+@sink(type = 'log')
+define stream LogStream (symbol string, price float, volume long);
+
+from StockStream[NOT(symbol is null)]
+select str:upper(symbol) as symbol, price, volume  
+insert into LogStream;
