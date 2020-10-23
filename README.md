@@ -7,4 +7,6 @@ This repository contains streaming integration samples that are build to impleme
 - [Enrich Data from 2 Streams](enrich-2-streams/README.md)
 - [Transform Data](transform-data/README.md)
 - [Transform with custom function](transform-custom-function/README.md)
+- [ETL with files](etl-files/README.md)
+
 
